@@ -6,7 +6,7 @@ __author__ = 'Ben'
 import orm
 from orm import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
-class announcement(Model):
+class Announcement(Model):
     __table__ = 'announcements'
 
     announcement_type = IntegerField()
@@ -39,3 +39,13 @@ class announcement(Model):
     # `trade_price` text(200), -- 中标价格
     # `url` text(200), -- 原文链接
 	# `id` Int not null auto_increment,
+
+# class Failure_requests(Model):
+#     __table__ = 'failure_requests'
+
+#     failure_type = IntegerField()
+#     url = StringField(ddl='text(500)')
+#     params = StringField(ddl='text(500)')
+#     district = StringField(ddl='text(50)')
+#     id = StringField(primary_key=True ,ddl='Int')
+

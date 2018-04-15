@@ -22,7 +22,7 @@ async def init(loop):
     prices = ['1', '2', '3', '4', '5']
     total_price = reduce(lambda x, y: int(x) + int(y), prices)
     print(total_price)
-    await spider.start()
+    # await spider.start()
 
 
 loop = asyncio.get_event_loop()
