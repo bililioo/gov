@@ -22,24 +22,24 @@ async def init(loop):
     for item in arr:
         await spider.start(item)
 
-# async def re_request():
-#     re = await models.Failure_requests.findAll()
-#     for re in requests:
-#         if re.failure_type == 0:
-#             params_dict = ast.literal_eval(re.params)
-#             await spider.start(params_dict)
+async def re_request():
+    re = await models.Failure_requests.findAll()
+    for re in requests:
+        if re.failure_type == 0:
+            params_dict = ast.literal_eval(re.params)
+            await spider.start(params_dict)
 
-#         elif re.failure_type == 1:
-#             params_dict = ast.literal_eval(re.params)
-#             await spider.main_spider(params_dict, re.district)
+        elif re.failure_type == 1:
+            params_dict = ast.literal_eval(re.params)
+            await spider.main_spider(params_dict, re.district)
 
-#         elif re.failure_type == 2:
-#             params_dict = ast.literal_eval(re.params)
-#             await spider.request_content(re.url, re.district)
+        elif re.failure_type == 2:
+            params_dict = ast.literal_eval(re.params)
+            await spider.request_content(re.url, re.district)
 
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init(loop))
-# loop.run_until_complete(re_request())
+loop.run_until_complete(re_request())
 loop.close()

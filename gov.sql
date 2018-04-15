@@ -28,11 +28,11 @@ create table announcements (
 ) engine=innodb default charset=utf8;
 
 
--- create table failure_requests (
---     `failure_type` Int not null, -- 0=页码失败，1=列表失败，2=内容页失败
---     `url` text(500), -- url
---     `params` text(500),
---     `district` text(50), -- 所属地区
---     `id` Int not null auto_increment,
---     primary key (`id`)
--- ) engine=innodb default charset=utf8;
+create table failure_requests (
+    `failure_type` Int not null, -- 0=页码失败，1=列表失败，2=内容页失败
+    `url` text(500), -- url
+    `params` text(500),
+    `district` text(50), -- 所属地区
+    `id` Int not null auto_increment,
+    primary key (`id`)
+) engine=innodb default charset=utf8;
