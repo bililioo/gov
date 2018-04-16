@@ -18,8 +18,13 @@ async def init(loop):
     await orm.create_pool(loop, **config.configs.db)
 
     # while True:
-    #     await spider.request_content('/showNotice/id/40288ba94f409de6014f4a07ca5916d4.html', 'fdsf')
+        # await spider.request_content('/showNotice/id/40288ba94f409de6014f4a07ca5916d4.html', 'fdsf')
+
+        # params = {'purchaserOrgName': '', 'operateDateTo': '', 'channelCode': '0008', 'title': '教育', 'stockTypes': '', 'stockIndexName': '', 'operateDateFrom': '2015-01-01', 'stockNum': '', 'sitewebId': '297e6a6a49176e840149184f0a590e9c', 'performOrgName': ''}
+        # await spider.start(params)
+
     arr = parameters.create_all_search_List_params()
+
     for item in arr:
         await spider.start(item)
 
