@@ -80,7 +80,7 @@ async def start(params):
         await model.save()
     
     if arr == None:
-        return
+        return    
 
     if int(arr[0]) == 1:
         params_data = arr[1]
@@ -155,10 +155,10 @@ async def main_spider(data, district):
         await model.save()
         
 
-async def request_content(herf, district):
+async def request_content(href, district):
     logging.info('==============================')
 
-    url = base_URL + herf
+    url = base_URL + href
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba96269beb201626be8ab54496e.html' # 3个中标供应商测试url
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95debddc9015df356a76c3088.html' # 项目分包成交金额测试url
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba96079352601609c3e44b02017.html'
@@ -169,7 +169,7 @@ async def request_content(herf, district):
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84ebb3b8e014ece6e09f86a7f.html'
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba94f5ff01f014f67cfbc92630b.html'
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84ebb3b8e014ece70c9226b1d.html'
-    url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba962b4fd6d0162b88ae0da2db3.html'
+    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba962b4fd6d0162b88ae0da2db3.html'
     logging.info('url = %s' % url)
     
     try:
@@ -232,7 +232,7 @@ async def content_spider(html, url='', district=''):
     if len(tr_nodes) == 2:
         tr = tr_nodes[0]
         td = tr.find_all('td')[-1].text
-        if td.count('中标、成交金额（元）') == 1:
+        if td.count('成交金额（元）') == 1:
             tr1 = tr_nodes[1]
             trade_price = tr1.find_all('td')[-1].text
             trade_price = ''.join(filter(lambda ch: ch in '0123456789.', trade_price))
@@ -240,7 +240,7 @@ async def content_spider(html, url='', district=''):
             logging.info('中标、成交金额（元） %s' % trade_price)
     elif len(tr_nodes) > 2:
         tr0 = tr_nodes[0]
-        if tr0.find_all('td')[-1].text.count('中标、成交金额（元）') == 1: 
+        if tr0.find_all('td')[-1].text.count('成交金额（元）') == 1: 
             
             for i, tr_node in enumerate(tr_nodes[1:]):
                 trade_price = tr_node.find_all('td')[-1].text
