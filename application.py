@@ -17,7 +17,8 @@ import ast
 async def init(loop):
     await orm.create_pool(loop, **config.configs.db)
 
-    # await spider.request_content('/showNotice/id/40288ba94f1d14e6014f3f5a9ec27e84.html', 'fdsf')
+    # while True:
+    #     await spider.request_content('/showNotice/id/40288ba94f409de6014f4a07ca5916d4.html', 'fdsf')
     arr = parameters.create_all_search_List_params()
     for item in arr:
         await spider.start(item)

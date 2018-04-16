@@ -128,7 +128,7 @@ def get_page_count(params):
 
 
 async def main_spider(data, district):
-    asyncio.sleep(1)
+    await asyncio.sleep(2)
 
     logging.info(data)
 
@@ -336,7 +336,7 @@ async def content_spider(html, url='', district=''):
         for i, supplier in enumerate(suppliers):
 
             p = 0
-            if len(prices) != 0:
+            if len(prices) >= len(suppliers):
                 p = prices[i]
 
             model = models.Announcement(announcement_type=0, 
