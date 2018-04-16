@@ -72,7 +72,8 @@ async def start(params):
         model = models.Failure_requests(params=str(params), 
                                         url='http://www.gdgpo.gov.cn/queryMoreCityCountyInfoList2.do', 
                                         failure_type=0, 
-                                        district='')
+                                        district='',
+                                        error_msg=str(error))
         await model.save()
     
     if arr == None:
@@ -147,7 +148,7 @@ async def main_spider(data, district):
                 await request_content(href, district)
     except Exception as error:
         logging.info('<<<<<<<<<<<请求列表error: %s' % error)
-        model = models.Failure_requests(params=str(data), url=url, failure_type=1, district=district)
+        model = models.Failure_requests(params=str(data), url=url, failure_type=1, district=district, error_msg=str(error))
         await model.save()
         
 
@@ -175,7 +176,7 @@ async def request_content(herf, district):
     except urllib.error.HTTPError as error:
         logging.info('******request content http error : %s' % error)
 
-        model = models.Failure_requests(params='', url=href, failure_type=2, district=district)
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error))
         await model.save()
 
     except urllib.error.URLError as error:
@@ -184,7 +185,7 @@ async def request_content(herf, district):
     except Exception as error:
         logging.info('******other Exception: %s', error)
 
-        model = models.Failure_requests(params='', url=href, failure_type=2, district=district)
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error))
         await model.save()
 
 async def content_spider(html, url='', district=''):
