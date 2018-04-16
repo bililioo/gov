@@ -334,6 +334,11 @@ async def content_spider(html, url='', district=''):
     else:
         # suppliers 有多个的原因是中标分包
         for i, supplier in enumerate(suppliers):
+
+            p = 0
+            if len(prices) != 0:
+                p = prices[i]
+
             model = models.Announcement(announcement_type=0, 
                                         publish_time=publish_time, 
                                         pro_num=pro_num, 
@@ -345,7 +350,7 @@ async def content_spider(html, url='', district=''):
                                         agent=agent,
                                         supplier=supplier,
                                         budget=budget,
-                                        trade_price=prices[i],
+                                        trade_price=p,
                                         url=url,
                                         )
             logging.info(model)
