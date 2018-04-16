@@ -64,6 +64,9 @@ def create_data(index, title, sitewebId):
     return data
 
 async def start(params):
+
+    arr = None
+    
     try:
         arr = get_page_count(params)
     except Exception as error:
