@@ -33,6 +33,7 @@ create table failure_requests (
     `url` text(500), -- url
     `params` text(500),
     `district` text(50), -- 所属地区
+    `error_msg` text(200) -- 错误信息
     `id` Int not null auto_increment,
     primary key (`id`)
 ) engine=innodb default charset=utf8;

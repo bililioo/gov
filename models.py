@@ -47,5 +47,6 @@ class Failure_requests(Model):
     url = StringField(ddl='text(500)')
     params = StringField(ddl='text(500)')
     district = StringField(ddl='text(50)')
+    error_msg = StringField(ddl='text(200)')
     id = StringField(primary_key=True ,ddl='Int')
 

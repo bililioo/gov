@@ -66,15 +66,6 @@ def create_data(index, title, sitewebId):
 async def start(params):
     try:
         arr = get_page_count(params)
-        if arr == None:
-            return
-
-        for index in range(1, int(arr[0])):
-            params_data = arr[1]
-
-            data = create_data(index, params_data.get('title'), params_data.get('sitewebId'))
-            district = parameters.all_district.get(params_data.get('sitewebId'))
-            await main_spider(data, district)
     except Exception as error:
         logging.info('>>>>>>>>>>>>查页数error：%s' % error)
 
@@ -83,6 +74,23 @@ async def start(params):
                                         failure_type=0, 
                                         district='')
         await model.save()
+    
+    if arr == None:
+        return
+
+    if int(arr[0]) == 1:
+        params_data = arr[1]
+
+        data = create_data('1', params_data.get('title'), params_data.get('sitewebId'))
+        district = parameters.all_district.get(params_data.get('sitewebId'))
+        await main_spider(data, district)
+    else:
+        for index in range(1, int(arr[0])):
+            params_data = arr[1]
+
+            data = create_data(index, params_data.get('title'), params_data.get('sitewebId'))
+            district = parameters.all_district.get(params_data.get('sitewebId'))
+            await main_spider(data, district)
 
 
 def get_page_count(params):
@@ -106,6 +114,12 @@ def get_page_count(params):
     div = bs_obj.body.div.find_all(attrs={"class": 'm_m_c_page'})
     a_node_href = div[0].find_all('a')[-2]['href']
     page_count = ''.join(filter(lambda ch: ch in '0123456789.', a_node_href))
+
+    if page_count == '':
+        page_count = '1'
+    #     page_count = div[0].span.find_all(attrs={"class": 'aspan1'}).text
+        
+
     return (page_count, params)
 
 
