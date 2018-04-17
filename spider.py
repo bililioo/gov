@@ -47,12 +47,12 @@ replace_text = [
     '代理机构：',
 ]
 
-def create_data(index, title, sitewebId):
+def create_data(channel, index, title, sitewebId):
     data = dict()
     data['pageIndex'] = str(index)
     data['pageSize'] = '15'
     data['stockTypes'] = ''	
-    data['channelCode'] = '0008'
+    data['channelCode'] = str(channel)
     data['sitewebId'] = sitewebId
     data['title'] =	title
     data['stockNum'] = ''
@@ -85,14 +85,14 @@ async def start(params):
     if int(arr[0]) == 1:
         params_data = arr[1]
 
-        data = create_data('1', params_data.get('title'), params_data.get('sitewebId'))
+        data = create_data(params.get('channelCode'),'1', params_data.get('title'), params_data.get('sitewebId'))
         district = parameters.all_district.get(params_data.get('sitewebId'))
         await main_spider(data, district)
     else:
         for index in range(1, int(arr[0])):
             params_data = arr[1]
 
-            data = create_data(index, params_data.get('title'), params_data.get('sitewebId'))
+            data = create_data(params.get('channelCode'), index, params_data.get('title'), params_data.get('sitewebId'))
             district = parameters.all_district.get(params_data.get('sitewebId'))
             await main_spider(data, district)
 
@@ -132,7 +132,10 @@ async def main_spider(data, district):
 
     logging.info(data)
 
-    # params = b'stockTypes=&channelCode=0008&sitewebId=4028889705bebb510105bec068b00003&title=%E5%A4%A7%E5%AD%A6&stockNum=&purchaserOrgName=&performOrgName=&stockIndexName=&operateDateFrom=2015-01-01&operateDateTo='
+    if str(data.get('channelCode')) == '0005':
+        announcement_type = 1
+    else:
+        announcement_type = 0
 
     url = 'http://www.gdgpo.gov.cn/queryMoreCityCountyInfoList2.do'
     params = bytes(parse.urlencode(data), 'utf-8')
@@ -146,16 +149,19 @@ async def main_spider(data, district):
         a_nodes = bs_obj.body.find_all(attrs={"target": "_blank"})
         for a_node in a_nodes:
             href = a_node.attrs.get('href')
+            # title = a_node.attrs.get('title')
+            # logging.info(title)
+            # logging.info(href)
             if href.count('showNotice/id/') == 1:
                 # 开始采集公告内容网页
-                await request_content(href, district)
+                await request_content(href, district, announcement_type)
     except Exception as error:
         logging.info('<<<<<<<<<<<请求列表error: %s' % error)
         model = models.Failure_requests(params=str(data), url=url, failure_type=1, district=district, error_msg=str(error))
         await model.save()
         
 
-async def request_content(href, district):
+async def request_content(href, district, announcement_type):
     logging.info('==============================')
 
     url = base_URL + href
@@ -170,11 +176,14 @@ async def request_content(href, district):
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba94f5ff01f014f67cfbc92630b.html'
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84ebb3b8e014ece70c9226b1d.html'
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba962b4fd6d0162b88ae0da2db3.html'
+    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
+
+    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95c420995015c428dcc882392.html'
     logging.info('url = %s' % url)
     
     try:
         html = request.urlopen(url, timeout=10)
-        await content_spider(html, url, district)
+        await content_spider(html, url, district, announcement_type)
 
     except urllib.error.HTTPError as error:
         logging.info('******request content http error : %s' % error)
@@ -191,15 +200,14 @@ async def request_content(href, district):
         model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error))
         await model.save()
 
-async def content_spider(html, url='', district=''):
+async def content_spider(html, url='', district='', announcement_type=0):
 
     time.sleep(2)
 
-    announcement_type = 0
     publish_time = ''
     pro_num = ''
     pro_title = ''
-    content = ''
+    pro_content = ''
     purchaser = ''
     agent = ''
     budget = '0'
@@ -218,16 +226,22 @@ async def content_spider(html, url='', district=''):
         purchaser = purchaser[purchaser.find('受') + 1:purchaser.find('的委托')]
         logging.info('%s %s' % (replace_text[4], purchaser))
 
+        
+        p_nodes = div[0].find_all('p')
         # 2015的采购项目名
-        temp_title = div[0].text
-        index = div[0].text.find('采购项目名称：')
-        temp_title = temp_title[index + 7:]
-        temp_title = temp_title[:temp_title.find('。')] 
-        pro_title = temp_title
-        logging.info('%s %s' % (replace_text[1], pro_title))
+        for p in p_nodes:
+            if p.text.count('采购项目名称：') == 1: 
+                pro_title = p.text[p.text.find('：') + 1:]
+                logging.info('%s %s' % (replace_text[1], pro_title))
 
+            elif p.text.count('内容：') == 1 and pro_content == '':
+                pro_content = p.text[p.text.find('：') + 1:]
+                logging.info('项目内容：%s' % pro_content)
+    
+    tr_nodes = []
+    if bs_obj != None and bs_obj.body != None and bs_obj.body.tbody != None:
+        tr_nodes = bs_obj.body.tbody.find_all('tr')
 
-    tr_nodes = bs_obj.body.tbody.find_all('tr')
     prices = []
     if len(tr_nodes) == 2:
         tr = tr_nodes[0]
@@ -304,9 +318,9 @@ async def content_spider(html, url='', district=''):
             agent = span_node.text.replace(replace_text[5], '')
             logging.info('%s %s' % (replace_text[5], agent))
         
-    # 一个中标供应商
+    # 一个中标供应商 或没找到供应商
     if len(suppliers) == 1 or len(suppliers) == 0:
-        total_price = 0
+        total_price = 0 
         if len(prices) == 1:
             total_price = prices[0]
         elif len(prices) > 1:
@@ -320,7 +334,7 @@ async def content_spider(html, url='', district=''):
                                     pro_num=pro_num, 
                                     title=title,
                                     pro_title=pro_title,
-                                    content=content,
+                                    content=pro_content,
                                     district=district,
                                     purchaser=purchaser,
                                     agent=agent,
@@ -344,7 +358,7 @@ async def content_spider(html, url='', district=''):
                                         pro_num=pro_num, 
                                         title=title,
                                         pro_title=pro_title,
-                                        content=content,
+                                        content=pro_content,
                                         district=district,
                                         purchaser=purchaser,
                                         agent=agent,
