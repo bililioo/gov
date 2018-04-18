@@ -27,17 +27,16 @@ async def re_request():
         if re.failure_type == 0:
             params_dict = ast.literal_eval(re.params)
             await spider.start(params_dict)
-            models.Failure_requests.remove(re.id)
+            await models.Failure_requests.remove(re)
 
         elif re.failure_type == 1:
             params_dict = ast.literal_eval(re.params)
             await spider.main_spider(params_dict, re.district)
-            models.Failure_requests.remove(re.id)
+            await models.Failure_requests.remove(re)
 
         elif re.failure_type == 2:
-            params_dict = ast.literal_eval(re.params)
-            await spider.request_content(re.url, re.district)
-            models.Failure_requests.remove(re.id)
+            await spider.request_content(re.url, re.district, re.announcement_type)
+            await models.Failure_requests.remove(re)
 
 
 async def delay():
@@ -62,12 +61,31 @@ async def districts_zhaobiao():
     for item in arr:
         await spider.start(item)
 
+async def provinces_zhongbiao():
+    await delay()
+    arr = parameters.create_provinces(Channel.zhaobiao)
+    for item in arr:
+        await spider.start(item)
 
-tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+async def cities_zhongbiao():
+    await delay()
+    arr = parameters.create_cities(Channel.zhaobiao)
+    for item in arr:
+        await spider.start(item)
+
+async def districts_zhongbiao():
+    await delay()
+    arr = parameters.create_cities(Channel.zhaobiao)
+    for item in arr:
+        await spider.start(item)
+
+# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
-loop.run_until_complete(asyncio.wait(tasks))
+# loop.run_until_complete(asyncio.wait(tasks))
+# loop.run_until_complete(asyncio.wait(tasks1))
 loop.run_until_complete(re_request())
 
 loop.close()

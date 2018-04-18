@@ -167,18 +167,7 @@ async def request_content(href, district, announcement_type):
     url = base_URL + href
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba96269beb201626be8ab54496e.html' # 3个中标供应商测试url
     # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95debddc9015df356a76c3088.html' # 项目分包成交金额测试url
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba96079352601609c3e44b02017.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95113b8ce015113f349d9020e.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84c5f33d6014c6e2afd513871.html' # 15年样式的url
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba94f1d14e6014f29dc40d03e99.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95e1ebb6a015e27d63e9573e8.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84ebb3b8e014ece6e09f86a7f.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba94f5ff01f014f67cfbc92630b.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/297e55e84ebb3b8e014ece70c9226b1d.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba962b4fd6d0162b88ae0da2db3.html'
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
 
-    # url = 'http://www.gdgpo.gov.cn/showNotice/id/40288ba95c420995015c428dcc882392.html'
     logging.info('url = %s' % url)
     
     try:
@@ -188,7 +177,7 @@ async def request_content(href, district, announcement_type):
     except urllib.error.HTTPError as error:
         logging.info('******request content http error : %s' % error)
 
-        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error))
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
         await model.save()
 
     except urllib.error.URLError as error:
@@ -197,7 +186,7 @@ async def request_content(href, district, announcement_type):
     except Exception as error:
         logging.info('******other Exception: %s', error)
 
-        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error))
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
         await model.save()
 
 async def content_spider(html, url='', district='', announcement_type=0):

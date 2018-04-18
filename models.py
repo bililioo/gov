@@ -43,6 +43,7 @@ class Announcement(Model):
 class Failure_requests(Model):
     __table__ = 'failure_requests'
 
+    announcement_type = IntegerField()
     failure_type = IntegerField()
     url = StringField(ddl='text(500)')
     params = StringField(ddl='text(500)')

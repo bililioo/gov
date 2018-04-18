@@ -29,6 +29,7 @@ create table announcements (
 
 
 create table failure_requests (
+    `announcement_type` Int not null,  -- 公告类型
     `failure_type` Int not null, -- 0=页码失败，1=列表失败，2=内容页失败
     `url` text(500), -- url
     `params` text(500),
