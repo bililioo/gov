@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+__author__ = 'Ben'
+
 '''
 Configuration
 '''
@@ -46,8 +48,8 @@ def toDict(d):
 configs = configs_default.configs
 
 try:
-    import config_override
-    configs = merge(configs, config_override.configs)
+    import configs_override
+    configs = merge(configs, configs_override.configs)
 except ImportError:
     pass
 

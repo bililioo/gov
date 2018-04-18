@@ -1,4 +1,4 @@
--- schema.sql
+-- create by Ben.
 -- 如果存在先删除库
 drop database if exists gov;
 -- 建库

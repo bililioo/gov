@@ -9,15 +9,20 @@ import orm
 import spider
 import asyncio
 import os
-import config
+from config import configs
 import parameters
 import models
 import ast
 from parameters import Channel
 import random
 
+'''
+    把队列放进loop中会以协程的方式执行队列中的任务，一个队列过多任务，可能会导致访问站点失败。
+'''
+
 async def init_sql(loop):
-    await orm.create_pool(loop, **config.configs.db)
+    logging.info(configs)
+    await orm.create_pool(loop, **configs.db)
 
 async def re_request():
     logging.info('开始循环失败请求')
@@ -79,8 +84,11 @@ async def districts_zhongbiao():
     for item in arr:
         await spider.start(item)
 
+# 招标队列 
 # tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
-tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
+# 中标队列
+# tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
+
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
