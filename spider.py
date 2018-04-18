@@ -318,7 +318,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
         if len(suppliers) == 0:
             suppliers.append('')
 
-        model = models.Announcement(announcement_type=0, 
+        model = models.Announcement(announcement_type=announcement_type, 
                                     publish_time=publish_time, 
                                     pro_num=pro_num, 
                                     title=title,
@@ -342,7 +342,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
             if len(prices) >= len(suppliers):
                 p = prices[i]
 
-            model = models.Announcement(announcement_type=0, 
+            model = models.Announcement(announcement_type=announcement_type, 
                                         publish_time=publish_time, 
                                         pro_num=pro_num, 
                                         title=title,
