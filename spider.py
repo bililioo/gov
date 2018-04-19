@@ -299,10 +299,10 @@ async def content_spider(html, url='', district='', announcement_type=0):
             pro_title = span_node.text.replace(replace_text[1], '')
             logging.info('%s %s' % (replace_text[1], pro_title))
 
-        if replace_text[2] in span_node.text:
-            budget = span_node.text.replace(replace_text[2], '')
-            budget = budget.replace(',', '')
-            logging.info('%s %s' % (replace_text[2], budget))
+        # if replace_text[2] in span_node.text:
+        #     budget = span_node.text.replace(replace_text[2], '')
+        #     budget = budget.replace(',', '')
+        #     logging.info('%s %s' % (replace_text[2], budget))
 
         if replace_text[3] in span_node.text:
             publish_time = span_node.text.replace(replace_text[3], '')
