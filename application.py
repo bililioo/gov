@@ -91,20 +91,28 @@ async def content():
     # url = '/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
     # url = '/showNotice/id/40288ba962b4fd6d0162bc825e4a5303.html'
     # url = '/showNotice/id/40288ba95ccd031b015ccdca6482612b.html'
-    url = '/showNotice/id/40288ba956005483015607482e2371cb.html'
-    await spider.request_content(url, 'guangzhou', 0)
+    # url = '/showNotice/id/40288ba956005483015607482e2371cb.html'
+    # url = '/showNotice/id/40288ba95e1ebb6a015e552ab6545181.html'
+    # url = '/showNotice/id/40288ba961a8fc710161c0888eae19ff.html'
+    # url = '/showNotice/id/40288ba955e4c3810155eca276645552.html'
+    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
+    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
+    # url = '/showNotice/id/40288ba95872c0340158769ab920428d.html'
+    # url = '/showNotice/id/40288ba95ad9941b015ada5427781ae2.html'
+    url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
+    await spider.request_content(url, 'guangzhou', 1)
 
 # 招标队列 
-# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 # 中标队列
-tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
+# tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(content())
-# loop.run_until_complete(asyncio.wait(tasks))  
-loop.run_until_complete(asyncio.wait(tasks1))
+loop.run_until_complete(asyncio.wait(tasks))  
+# loop.run_until_complete(asyncio.wait(tasks1))
 loop.run_until_complete(re_request()) 
 
 loop.close()

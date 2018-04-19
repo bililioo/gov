@@ -15,6 +15,7 @@ import ssl
 import models
 import parameters
 from functools import reduce
+import convert
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -183,11 +184,11 @@ async def request_content(href, district, announcement_type):
     except urllib.error.URLError as error:
         logging.info('******request content url error : %s' % error)
 
-    # except Exception as error:
-        # logging.info('******other Exception: %s', error)
+    except Exception as error:
+        logging.info('******other Exception: %s', error)
 
-        # model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
-        # await model.save()
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
+        await model.save()
 
 async def content_spider(html, url='', district='', announcement_type=0):
 
@@ -210,6 +211,25 @@ async def content_spider(html, url='', district='', announcement_type=0):
     if len(title_node) > 0:
         title = title_node[0].text
         logging.info('title = %s' % title)
+
+    # if '中标金额：' in span_node.text and announcement_type == 0 and total_price == 0:
+    #         total_price = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
+
+    header_nodes = bs_obj.body.div.find_all(attrs={"class": 'zw_c_c_qx'})
+    header_span_nodes = header_nodes[0].find_all('span')
+    for span in header_span_nodes:
+        if '中标金额：' in span.text and announcement_type == 0:
+            total_price = ''.join(filter(lambda ch: ch in '0123456789.', span.text))
+            if total_price == '':
+                total_price = 0
+            logging.info('中标金额： %s' % total_price)
+
+        if '预算金额：' in span.text and announcement_type == 1:
+            budget = ''.join(filter(lambda ch: ch in '0123456789.', span.text))
+            if budget == '':
+                budget = 0
+            logging.info('预算金额： %s' % budget)
+
 
     div = bs_obj.body.div.find_all(attrs={"class": 'zw_c_c_cont'})
     if len(div) > 0:
@@ -235,7 +255,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
         tr_nodes = bs_obj.body.tbody.find_all('tr')
 
     prices = []
-    if len(tr_nodes) == 2:
+    if len(tr_nodes) == 2 and total_price == 0:
         tr = tr_nodes[0]
         td = tr.find_all('td')[-1].text
         if td.count('成交金额（元）') == 1:
@@ -244,7 +264,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
             trade_price = ''.join(filter(lambda ch: ch in '0123456789.', trade_price))
             prices.append(trade_price)
             logging.info('中标、成交金额（元） %s' % trade_price)
-    elif len(tr_nodes) > 2:
+    elif len(tr_nodes) > 2 and total_price == 0:
         tr0 = tr_nodes[0]
         if tr0.find_all('td')[-1].text.count('成交金额（元）') == 1: 
             
@@ -286,6 +306,9 @@ async def content_spider(html, url='', district='', announcement_type=0):
             trade_price = ''.join(filter(lambda ch: ch in '0123456789.', trade_price))
             prices.append(trade_price)
             logging.info('中标、成交金额（元） %s' % trade_price)
+    
+    if len(prices) > 0:
+        total_price = reduce(lambda x, y: float(x) + float(y), prices)
 
     span_nodes = bs_obj.body.find_all('span')
     for span_node in span_nodes:
@@ -316,18 +339,22 @@ async def content_spider(html, url='', district='', announcement_type=0):
             agent = span_node.text.replace(replace_text[5], '')
             logging.info('%s %s' % (replace_text[5], agent))
         
-
-        if '预算金额：' in span_node.text and announcement_type == 1:
-            budget = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
+        if '中标、成交金额人民币：' in span_node.text and announcement_type == 0 and total_price == 0: 
+            cut_text = span_node.text[span_node.text.find('：') + 1:]
+            total_price = ''.join(filter(lambda ch: ch in '0123456789.', cut_text))
+            if total_price == '':
+                total_price = convert.chinese_to_arabic(cut_text)
+                # total_price = ''.join(filter(lambda ch: ch in '0123456789.', total_price))
+    
+        if '中标金额：人民币' in span_node.text and announcement_type == 0 and total_price == 0:
+            cut_text = span_node.text[span_node.text.find('：') + 1:]
+            total_price = ''.join(filter(lambda ch: ch in '0123456789.', cut_text))
+            if total_price == '':
+                total_price = 0
         
-        if '中标金额：' in span_node.text and announcement_type == 0:
-            total_price = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
-            # if prices == None or len(prices) == 0:
-            #     if len(suppliers) == 1 or len(suppliers): 
-            #         prices.append(temp_price)
-            #     else:
-            #         for i in enumerate(suppliers):
-            #             prices.append(temp_price)
+        
+        # if '中标金额：' in span_node.text and announcement_type == 0 and total_price == 0:
+        #     total_price = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
         
     if len(suppliers) == 0:
         suppliers.append('')
@@ -336,7 +363,13 @@ async def content_spider(html, url='', district='', announcement_type=0):
     #     suppliers.append('')
     #     supplier = ','.join((str(i) for i in suppliers)
 
-    model = models.Announcement(announcement_type=announcement_type,publish_time=publish_time, 
+    if title == '':
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg='title is null', announcement_type=announcement_type)
+        await model.save()
+        return 
+
+
+    model = models.Announcement(announcement_type=announcement_type,                    publish_time=publish_time, 
     pro_num=pro_num, 
     title=title,
     pro_title=pro_title,
