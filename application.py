@@ -90,7 +90,8 @@ async def content():
     # url = '/showNotice/id/40288ba9605d0c1a0160689fabe07608.html'
     # url = '/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
     # url = '/showNotice/id/40288ba962b4fd6d0162bc825e4a5303.html'
-    url = '/showNotice/id/40288ba95ccd031b015ccdca6482612b.html'
+    # url = '/showNotice/id/40288ba95ccd031b015ccdca6482612b.html'
+    url = '/showNotice/id/40288ba956005483015607482e2371cb.html'
     await spider.request_content(url, 'guangzhou', 0)
 
 # 招标队列 
@@ -104,6 +105,6 @@ loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(content())
 # loop.run_until_complete(asyncio.wait(tasks))  
 loop.run_until_complete(asyncio.wait(tasks1))
-loop.run_until_complete(re_request())
+loop.run_until_complete(re_request()) 
 
 loop.close()
