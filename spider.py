@@ -183,11 +183,11 @@ async def request_content(href, district, announcement_type):
     except urllib.error.URLError as error:
         logging.info('******request content url error : %s' % error)
 
-    # except Exception as error:
-    #     logging.info('******other Exception: %s', error)
+    except Exception as error:
+        logging.info('******other Exception: %s', error)
 
-    #     model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
-    #     await model.save()
+        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
+        await model.save()
 
 async def content_spider(html, url='', district='', announcement_type=0):
 
@@ -200,6 +200,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
     purchaser = ''
     agent = ''
     budget = '0'
+    title = ''
 
     bs_obj = BeautifulSoup(html, 'lxml')
 

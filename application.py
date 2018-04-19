@@ -86,7 +86,8 @@ async def districts_zhongbiao():
 
 
 async def content():
-    url = '/showNotice/id/40288ba955a1e86c0155a4055fb80262.html'
+    # url = '/showNotice/id/40288ba955a1e86c0155a4055fb80262.html'
+    url = '/showNotice/id/40288ba9605d0c1a0160689fabe07608.html'
     await spider.request_content(url, 'guangzhou', 0)
 
 # 招标队列 
