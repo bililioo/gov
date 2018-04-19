@@ -84,6 +84,11 @@ async def districts_zhongbiao():
     for item in arr:
         await spider.start(item)
 
+
+async def content():
+    url = '/showNotice/id/40288ba955a1e86c0155a4055fb80262.html'
+    await spider.request_content(url, 'guangzhou', 0)
+
 # 招标队列 
 # tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 # 中标队列
@@ -92,8 +97,9 @@ async def districts_zhongbiao():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
+loop.run_until_complete(content())
 # loop.run_until_complete(asyncio.wait(tasks))
 # loop.run_until_complete(asyncio.wait(tasks1))
-loop.run_until_complete(re_request())
+# loop.run_until_complete(re_request())
 
 loop.close()

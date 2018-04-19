@@ -183,11 +183,11 @@ async def request_content(href, district, announcement_type):
     except urllib.error.URLError as error:
         logging.info('******request content url error : %s' % error)
 
-    except Exception as error:
-        logging.info('******other Exception: %s', error)
+    # except Exception as error:
+    #     logging.info('******other Exception: %s', error)
 
-        model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
-        await model.save()
+    #     model = models.Failure_requests(params='', url=href, failure_type=2, district=district, error_msg=str(error), announcement_type=announcement_type)
+    #     await model.save()
 
 async def content_spider(html, url='', district='', announcement_type=0):
 
@@ -275,6 +275,8 @@ async def content_spider(html, url='', district='', announcement_type=0):
 
         if p_node.text.count('中标（成交）金额：') == 1:
             trade_price = p_node.u.text
+            if trande_price == None:
+                trade_price = p_node.text
             trade_price = ''.join(filter(lambda ch: ch in '0123456789.', trade_price))
             prices.append(trade_price)
             logging.info('中标、成交金额（元） %s' % trade_price)
