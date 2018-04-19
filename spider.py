@@ -310,6 +310,10 @@ async def content_spider(html, url='', district='', announcement_type=0):
             agent = span_node.text.replace(replace_text[5], '')
             logging.info('%s %s' % (replace_text[5], agent))
         
+
+        if '预算金额：' in span_node.text and announcement_type == 1:
+            budget = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
+        
     # 一个中标供应商 或没找到供应商
     if len(suppliers) == 1 or len(suppliers) == 0:
         total_price = 0 
