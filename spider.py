@@ -192,6 +192,7 @@ async def request_content(href, district, announcement_type):
 async def content_spider(html, url='', district='', announcement_type=0):
 
     time.sleep(2)
+    # await asyncio.time.sleep(2)
 
     publish_time = ''
     pro_num = ''
@@ -201,6 +202,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
     agent = ''
     budget = '0'
     title = ''
+    total_price = 0
 
     bs_obj = BeautifulSoup(html, 'lxml')
 
@@ -314,57 +316,96 @@ async def content_spider(html, url='', district='', announcement_type=0):
         if '预算金额：' in span_node.text and announcement_type == 1:
             budget = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
         
-    # 一个中标供应商 或没找到供应商
-    if len(suppliers) == 1 or len(suppliers) == 0:
-        total_price = 0 
-        if len(prices) == 1:
-            total_price = prices[0]
-        elif len(prices) > 1:
-            total_price = reduce(lambda x, y: float(x) + float(y), prices)
+        if '中标金额：' in span_node.text and announcement_type == 0:
+            total_price = ''.join(filter(lambda ch: ch in '0123456789.', span_node.text))
+            # if prices == None or len(prices) == 0:
+            #     if len(suppliers) == 1 or len(suppliers): 
+            #         prices.append(temp_price)
+            #     else:
+            #         for i in enumerate(suppliers):
+            #             prices.append(temp_price)
         
-        if len(suppliers) == 0:
-            suppliers.append('')
+    if len(suppliers) == 0:
+        suppliers.append('')
+    supplier = ','.join(str(i) for i in suppliers)
+    # if len(suppliers) == 0:
+    #     suppliers.append('')
+    #     supplier = ','.join((str(i) for i in suppliers)
 
-        model = models.Announcement(announcement_type=announcement_type, 
-                                    publish_time=publish_time, 
-                                    pro_num=pro_num, 
-                                    title=title,
-                                    pro_title=pro_title,
-                                    content=pro_content,
-                                    district=district,
-                                    purchaser=purchaser,
-                                    agent=agent,
-                                    supplier=suppliers[0],
-                                    budget=budget,
-                                    trade_price=total_price,
-                                    url=url,
-                                    )
-        logging.info(model)
-        await model.save()
-    else:
-        # suppliers 有多个的原因是中标分包
-        for i, supplier in enumerate(suppliers):
+    model = models.Announcement(announcement_type=announcement_type,publish_time=publish_time, 
+    pro_num=pro_num, 
+    title=title,
+    pro_title=pro_title,
+    content=pro_content,
+    district=district,
+    purchaser=purchaser,
+    agent=agent,
+    supplier=supplier,
+    budget=budget,
+    trade_price=total_price,
+    url=url,
+    )
+    logging.info(model)
+    await model.save()
 
-            p = 0
-            if len(prices) >= len(suppliers):
-                p = prices[i]
+    # model = models.Announcement(announcement_type=announcement_type, publish_time=publish_time, pro_num=pro_num, title=title, pro_title=pro_title, content=pro_content, district=district, purchaser=purchaser, agent=agent, supplier=supplier, budget=budget, trade_price=total_price, url=url)
 
-            model = models.Announcement(announcement_type=announcement_type, 
-                                        publish_time=publish_time, 
-                                        pro_num=pro_num, 
-                                        title=title,
-                                        pro_title=pro_title,
-                                        content=pro_content,
-                                        district=district,
-                                        purchaser=purchaser,
-                                        agent=agent,
-                                        supplier=supplier,
-                                        budget=budget,
-                                        trade_price=p,
-                                        url=url,
-                                        )
-            logging.info(model)
-            await model.save()
+    # model = models.Announcement()
+
+    # logging.info(model)
+    # await model.save()
+
+    # 一个中标供应商 或没找到供应商
+    # if len(suppliers) == 1 or len(suppliers) == 0:
+    #     total_price = 0 
+    #     if len(prices) == 1:
+    #         total_price = prices[0]
+    #     elif len(prices) > 1:
+    #         total_price = reduce(lambda x, y: float(x) + float(y), prices)
+        
+    #     if len(suppliers) == 0:
+    #         suppliers.append('')
+
+    #     model = models.Announcement(announcement_type=announcement_type, 
+    #                                 publish_time=publish_time, 
+    #                                 pro_num=pro_num, 
+    #                                 title=title,
+    #                                 pro_title=pro_title,
+    #                                 content=pro_content,
+    #                                 district=district,
+    #                                 purchaser=purchaser,
+    #                                 agent=agent,
+    #                                 supplier=suppliers[0],
+    #                                 budget=budget,
+    #                                 trade_price=total_price,
+    #                                 url=url,
+    #                                 )
+    #     logging.info(model)
+    #     await model.save()
+    # else:
+    #     # suppliers 有多个的原因是中标分包
+    #     for i, supplier in enumerate(suppliers):
+
+    #         p = 0
+    #         if len(prices) >= len(suppliers):
+    #             p = prices[i]
+
+    #         model = models.Announcement(announcement_type=announcement_type, 
+    #                                     publish_time=publish_time, 
+    #                                     pro_num=pro_num, 
+    #                                     title=title,
+    #                                     pro_title=pro_title,
+    #                                     content=pro_content,
+    #                                     district=district,
+    #                                     purchaser=purchaser,
+    #                                     agent=agent,
+    #                                     supplier=supplier,
+    #                                     budget=budget,
+    #                                     trade_price=p,
+    #                                     url=url,
+    #                                     )
+    #         logging.info(model)
+    #         await model.save()
 
 
 
