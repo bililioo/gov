@@ -4,5 +4,8 @@
 __author__ = 'Ben'
 
 configs = {
+    'db' : {
+        'database': 'temp_gov'
+    }
 }
 

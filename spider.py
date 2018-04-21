@@ -249,6 +249,10 @@ async def content_spider(html, url='', district='', announcement_type=0):
             elif p.text.count('内容：') == 1 and pro_content == '':
                 pro_content = p.text[p.text.find('：') + 1:]
                 logging.info('项目内容：%s' % pro_content)
+            
+            elif p.text.count('预算金额') and budget == '0':
+                budget = ''.join(filter(lambda ch: ch in '0123456789.', p.text ))
+                logging.info('预算金额： %s' % budget)
     
     tr_nodes = []
     if bs_obj != None and bs_obj.body != None and bs_obj.body.tbody != None:
@@ -325,7 +329,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
             pro_title = span_node.text.replace(replace_text[1], '')
             logging.info('%s %s' % (replace_text[1], pro_title))
 
-        if replace_text[2] in span_node.text and announcement_type == 0:
+        if replace_text[2] in span_node.text and announcement_type == 0 and budget == '0':
             budget = span_node.text.replace(replace_text[2], '')
             budget = budget.replace(',', '')
             budget = ''.join(filter(lambda ch: ch in '0123456789.', budget))
@@ -384,68 +388,3 @@ async def content_spider(html, url='', district='', announcement_type=0):
     )
     logging.info(model)
     await model.save()
-
-    # model = models.Announcement(announcement_type=announcement_type, publish_time=publish_time, pro_num=pro_num, title=title, pro_title=pro_title, content=pro_content, district=district, purchaser=purchaser, agent=agent, supplier=supplier, budget=budget, trade_price=total_price, url=url)
-
-    # model = models.Announcement()
-
-    # logging.info(model)
-    # await model.save()
-
-    # 一个中标供应商 或没找到供应商
-    # if len(suppliers) == 1 or len(suppliers) == 0:
-    #     total_price = 0 
-    #     if len(prices) == 1:
-    #         total_price = prices[0]
-    #     elif len(prices) > 1:
-    #         total_price = reduce(lambda x, y: float(x) + float(y), prices)
-        
-    #     if len(suppliers) == 0:
-    #         suppliers.append('')
-
-    #     model = models.Announcement(announcement_type=announcement_type, 
-    #                                 publish_time=publish_time, 
-    #                                 pro_num=pro_num, 
-    #                                 title=title,
-    #                                 pro_title=pro_title,
-    #                                 content=pro_content,
-    #                                 district=district,
-    #                                 purchaser=purchaser,
-    #                                 agent=agent,
-    #                                 supplier=suppliers[0],
-    #                                 budget=budget,
-    #                                 trade_price=total_price,
-    #                                 url=url,
-    #                                 )
-    #     logging.info(model)
-    #     await model.save()
-    # else:
-    #     # suppliers 有多个的原因是中标分包
-    #     for i, supplier in enumerate(suppliers):
-
-    #         p = 0
-    #         if len(prices) >= len(suppliers):
-    #             p = prices[i]
-
-    #         model = models.Announcement(announcement_type=announcement_type, 
-    #                                     publish_time=publish_time, 
-    #                                     pro_num=pro_num, 
-    #                                     title=title,
-    #                                     pro_title=pro_title,
-    #                                     content=pro_content,
-    #                                     district=district,
-    #                                     purchaser=purchaser,
-    #                                     agent=agent,
-    #                                     supplier=supplier,
-    #                                     budget=budget,
-    #                                     trade_price=p,
-    #                                     url=url,
-    #                                     )
-    #         logging.info(model)
-    #         await model.save()
-
-
-
-# if __name__ == '__main__':
-#     datas = create_data(30)
-#     main_spider(datas[0])

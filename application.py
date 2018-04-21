@@ -99,11 +99,23 @@ async def content():
     # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
     # url = '/showNotice/id/40288ba95872c0340158769ab920428d.html'
     # url = '/showNotice/id/40288ba95ad9941b015ada5427781ae2.html'
-    url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
-    await spider.request_content(url, 'guangzhou', 1)
+    # url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
+    # url = '/showNotice/id/40288ba950b11eca0150b153c10f0d91.html'
+    # await spider.request_content(url, 'guangzhou', 0)
+
+
+    all_model = await models.Announcement.findAll()
+    for model in all_model:
+        url = model.url.replace('http://www.gdgpo.gov.cn', '')
+        await spider.request_content(url, model.district, 0)
+
+        await models.Announcement.remove(model)
+    # url = '/showNotice/id/40288ba959b6adeb0159c4e3c3326ef1.html'
+    # await spider.request_content(url, 'guangzhou', 0)
+
 
 # 招标队列 
-tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 # 中标队列
 # tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
 
@@ -111,8 +123,9 @@ tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(content())
-loop.run_until_complete(asyncio.wait(tasks))  
+# loop.run_until_complete(asyncio.wait(tasks))  
 # loop.run_until_complete(asyncio.wait(tasks1))
 loop.run_until_complete(re_request()) 
+
 
 loop.close()
