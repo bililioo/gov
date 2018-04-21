@@ -27,21 +27,26 @@ async def init_sql(loop):
 async def re_request():
     logging.info('开始循环失败请求')
 
-    request_models = await models.Failure_requests.findAll()
-    for re in request_models:
-        if re.failure_type == 0:
-            params_dict = ast.literal_eval(re.params)
-            await spider.start(params_dict)
-            await models.Failure_requests.remove(re)
+    cycle_type = True
+    while cycle_type:
+        request_models = await models.Failure_requests.findAll()
+        if len(request_models) > 0:
+           for re in request_models:
+                if re.failure_type == 0:
+                  params_dict = ast.literal_eval(re.params)
+                  await spider.start(params_dict)
+                  await models.Failure_requests.remove(re)
 
-        elif re.failure_type == 1:
-            params_dict = ast.literal_eval(re.params)
-            await spider.main_spider(params_dict, re.district)
-            await models.Failure_requests.remove(re)
+               elif re.failure_type == 1:
+                    params_dict = ast.literal_eval(re.params)
+                    await spider.main_spider(params_dict, re.district)
+                    await models.Failure_requests.remove(re)
 
-        elif re.failure_type == 2:
-            await spider.request_content(re.url, re.district, re.announcement_type)
-            await models.Failure_requests.remove(re)
+               elif re.failure_type == 2:
+                    await spider.request_content(re.url, re.district, re.announcement_type)
+                    await models.Failure_requests.remove(re)
+        else:
+             cycle_type = False
 
 
 async def delay():
@@ -103,7 +108,7 @@ async def content():
     await spider.request_content(url, 'guangzhou', 1)
 
 # 招标队列 
-tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 # 中标队列
 # tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
 
@@ -111,7 +116,7 @@ tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(content())
-loop.run_until_complete(asyncio.wait(tasks))  
+# loop.run_until_complete(asyncio.wait(tasks))  
 # loop.run_until_complete(asyncio.wait(tasks1))
 loop.run_until_complete(re_request()) 
 
