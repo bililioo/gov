@@ -10,11 +10,10 @@ import spider
 import asyncio
 import os
 from config import configs
-import parameters
 import models
 import ast
-from parameters import Channel
 import random
+import budget_fix
 
 '''
     把队列放进loop中会以协程的方式执行队列中的任务，一个队列过多任务，可能会导致访问站点失败。
@@ -24,108 +23,39 @@ async def init_sql(loop):
     logging.info(configs)
     await orm.create_pool(loop, **configs.db)
 
-async def re_request():
-    logging.info('开始循环失败请求')
-
-    request_models = await models.Failure_requests.findAll()
-    for re in request_models:
-        if re.failure_type == 0:
-            params_dict = ast.literal_eval(re.params)
-            await spider.start(params_dict)
-            await models.Failure_requests.remove(re)
-
-        elif re.failure_type == 1:
-            params_dict = ast.literal_eval(re.params)
-            await spider.main_spider(params_dict, re.district)
-            await models.Failure_requests.remove(re)
-
-        elif re.failure_type == 2:
-            await spider.request_content(re.url, re.district, re.announcement_type)
-            await models.Failure_requests.remove(re)
-
-
 async def delay():
     s = random.randint(1, 5)
     await asyncio.sleep(s)
 
-async def provinces_zhaobbiao():
-    await delay()
-    arr = parameters.create_provinces(Channel.zhaobiao)
-    for item in arr:
-        await spider.start(item)
+async def update(models_begin, models_end):
+    nil_models = await models.Announcement.findAll(where='budget = \'\'')
+    zero_models = await models.Announcement.findAll(where='budget = 0')
+    budget_models = nil_models + zero_models
 
-async def cities_zhaobiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhaobiao)
-    for item in arr:
-        await spider.start(item)
+    for item in budget_models[int(models_begin):int(models_end)]:
+        await delay()
+        await budget_fix.fix_model(item)
 
-async def districts_zhaobiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhaobiao)
-    for item in arr:
-        await spider.start(item)
+async def re_failure_ann():
+    logging.info('开始循环失败请求')
 
-async def provinces_zhongbiao():
-    await delay()
-    arr = parameters.create_provinces(Channel.zhongbiao)
-    for item in arr:
-        await spider.start(item)
+    cycle_type = True
+    while cycle_type:
+        request_models = await models.Failure_ann.findAll()
+        if len(request_models) > 0:
+            for item in request_models:
+                await delay()
+                await budget_fix.fix_model(item)
+                await models.Failure_ann.remove(item)
+        else:
+            cycle_type = False
 
-async def cities_zhongbiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhongbiao)
-    for item in arr:
-        await spider.start(item)
-
-async def districts_zhongbiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhongbiao)
-    for item in arr:
-        await spider.start(item)
-
-
-async def content():
-    # url = '/showNotice/id/40288ba955a1e86c0155a4055fb80262.html'
-    # url = '/showNotice/id/40288ba9605d0c1a0160689fabe07608.html'
-    # url = '/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
-    # url = '/showNotice/id/40288ba962b4fd6d0162bc825e4a5303.html'
-    # url = '/showNotice/id/40288ba95ccd031b015ccdca6482612b.html'
-    # url = '/showNotice/id/40288ba956005483015607482e2371cb.html'
-    # url = '/showNotice/id/40288ba95e1ebb6a015e552ab6545181.html'
-    # url = '/showNotice/id/40288ba961a8fc710161c0888eae19ff.html'
-    # url = '/showNotice/id/40288ba955e4c3810155eca276645552.html'
-    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
-    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
-    # url = '/showNotice/id/40288ba95872c0340158769ab920428d.html'
-    # url = '/showNotice/id/40288ba95ad9941b015ada5427781ae2.html'
-    # url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
-    # url = '/showNotice/id/40288ba950b11eca0150b153c10f0d91.html'
-    # await spider.request_content(url, 'guangzhou', 0)
-
-
-    all_model = await models.Announcement.findAll()
-    for model in all_model:
-        url = model.url.replace('http://www.gdgpo.gov.cn', '')
-        await spider.request_content(url, model.district, 0)
-
-        await models.Announcement.remove(model)
-    # url = '/showNotice/id/40288ba959b6adeb0159c4e3c3326ef1.html'
-    # await spider.request_content(url, 'guangzhou', 0)
-
-
-# 招标队列 
-# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
-# 中标队列
-# tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
-
+tasks = [update(0, 1000), update(1001, 2000), update(2001, -1)]
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
-# loop.run_until_complete(content())
-# loop.run_until_complete(asyncio.wait(tasks))  
-# loop.run_until_complete(asyncio.wait(tasks1))
-loop.run_until_complete(re_request()) 
+# loop.run_until_complete(asyncio.wait(tasks)) 
+loop.run_until_complete(re_failure_ann()) 
 
 
 loop.close()

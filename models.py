@@ -51,3 +51,20 @@ class Failure_requests(Model):
     error_msg = StringField(ddl='text(200)')
     id = StringField(primary_key=True ,ddl='Int')
 
+class Failure_ann(Model):
+    __table__ = 'failure_ann'
+
+    announcement_type = IntegerField()
+    publish_time = StringField(ddl='text(50)')
+    pro_num = StringField(ddl='text(100)')
+    title = StringField(ddl='text(500)')
+    pro_title = StringField(ddl='text(500)')
+    content = StringField(ddl='text(500)')
+    district = StringField(ddl='text(100)')
+    purchaser = StringField(ddl='text(200)')
+    agent = StringField(ddl='text(200)')
+    supplier = StringField(ddl='text(200)')
+    budget = StringField(ddl='text(100)')
+    trade_price = StringField(ddl='text(200)')
+    url = StringField(ddl='text(200)')
+    id = StringField(primary_key=True ,ddl='Int')
