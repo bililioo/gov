@@ -32,7 +32,8 @@ async def update(models_begin, models_end):
     zero_models = await models.Announcement.findAll(where='budget = 0')
     budget_models = nil_models + zero_models
 
-    for item in budget_models[int(models_begin):int(models_end)]:
+    for i, item in enumerate(budget_models[int(models_begin):int(models_end)]):
+        logging.info('+++++++++++current index: %s, id: %s' % (str(i), str(item.id)))
         await delay()
         await budget_fix.fix_model(item)
 
@@ -50,7 +51,7 @@ async def re_failure_ann():
         else:
             cycle_type = False
 
-tasks = [update(20831, 30000), update(30000, 40000), update(40000, -1)]
+tasks = [update(10500, 15000), update(15000, 20000), update(20000, -1)]
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
