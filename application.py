@@ -54,7 +54,7 @@ tasks = [update(20831, 30000), update(30000, 40000), update(40000, -1)]
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
-# loop.run_until_complete(asyncio.wait(tasks)) 
+loop.run_until_complete(asyncio.wait(tasks)) 
 loop.run_until_complete(re_failure_ann()) 
 
 
