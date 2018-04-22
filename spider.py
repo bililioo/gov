@@ -308,7 +308,10 @@ async def content_spider(html, url='', district='', announcement_type=0):
             logging.info('中标、成交金额（元） %s' % trade_price)
     
     if len(prices) > 0:
-        total_price = reduce(lambda x, y: float(x) + float(y), prices)
+        try:
+            total_price = reduce(lambda x, y: float(x) + float(y), prices)
+        except:
+            total_price = prices[0]
 
     span_nodes = bs_obj.body.find_all('span')
     for span_node in span_nodes:
