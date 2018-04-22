@@ -33,16 +33,16 @@ async def re_request():
         if len(request_models) > 0:
            for re in request_models:
                 if re.failure_type == 0:
-                  params_dict = ast.literal_eval(re.params)
-                  await spider.start(params_dict)
-                  await models.Failure_requests.remove(re)
+                    params_dict = ast.literal_eval(re.params)
+                    await spider.start(params_dict)
+                    await models.Failure_requests.remove(re)
 
-               elif re.failure_type == 1:
+                elif re.failure_type == 1:
                     params_dict = ast.literal_eval(re.params)
                     await spider.main_spider(params_dict, re.district)
                     await models.Failure_requests.remove(re)
 
-               elif re.failure_type == 2:
+                elif re.failure_type == 2:
                     await spider.request_content(re.url, re.district, re.announcement_type)
                     await models.Failure_requests.remove(re)
         else:
@@ -104,7 +104,8 @@ async def content():
     # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
     # url = '/showNotice/id/40288ba95872c0340158769ab920428d.html'
     # url = '/showNotice/id/40288ba95ad9941b015ada5427781ae2.html'
-    url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
+    # url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
+    url = '/showNotice/id/297e55e84ebb3b8e014ed2badade20d8.html'
     await spider.request_content(url, 'guangzhou', 1)
 
 # 招标队列 
@@ -118,6 +119,6 @@ loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(content())
 # loop.run_until_complete(asyncio.wait(tasks))  
 # loop.run_until_complete(asyncio.wait(tasks1))
-loop.run_until_complete(re_request()) 
+# loop.run_until_complete(re_request()) 
 
 loop.close()
