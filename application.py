@@ -50,7 +50,7 @@ async def re_failure_ann():
         else:
             cycle_type = False
 
-tasks = [update(0, 10000), update(10001, 20000), update(2001, -1)]
+tasks = [update(20831, 30000), update(30000, 40000), update(40000, -1)]
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
