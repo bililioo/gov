@@ -201,7 +201,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
     pro_content = ''
     purchaser = ''
     agent = ''
-    budget = '0'
+    budget = ''
     title = ''
     total_price = 0
 
@@ -224,10 +224,8 @@ async def content_spider(html, url='', district='', announcement_type=0):
                 total_price = 0
             logging.info('中标金额： %s' % total_price)
 
-        if '预算金额：' in span.text and announcement_type == 1:
+        if '预算金额：' in span.text and budget == '':
             budget = ''.join(filter(lambda ch: ch in '0123456789.', span.text))
-            if budget == '':
-                budget = 0
             logging.info('预算金额： %s' % budget)
 
 
@@ -249,6 +247,10 @@ async def content_spider(html, url='', district='', announcement_type=0):
             elif p.text.count('内容：') == 1 and pro_content == '':
                 pro_content = p.text[p.text.find('：') + 1:]
                 logging.info('项目内容：%s' % pro_content)
+
+            elif p.text.count('预算金额') == 1:
+                budget = ''.join(filter(lambda ch: ch in '0123456789.', p.text))
+                logging.info('预算金额： %s' % budget)
     
     tr_nodes = []
     if bs_obj != None and bs_obj.body != None and bs_obj.body.tbody != None:
@@ -328,11 +330,17 @@ async def content_spider(html, url='', district='', announcement_type=0):
             pro_title = span_node.text.replace(replace_text[1], '')
             logging.info('%s %s' % (replace_text[1], pro_title))
 
-        if replace_text[2] in span_node.text and announcement_type == 0:
-            budget = span_node.text.replace(replace_text[2], '')
+        # if replace_text[2] in span_node.text and announcement_type == 0:
+        #     budget = span_node.text.replace(replace_text[2], '')
+        #     budget = budget.replace(',', '')
+        #     budget = ''.join(filter(lambda ch: ch in '0123456789.', budget))
+        #     logging.info('%s %s' % (replace_text[2], budget))
+
+        if '三、采购项目预算金额（元）：' in span_node.text and budget == '':
+            budget = span_node.text.replace('三、采购项目预算金额（元）：', '')
             budget = budget.replace(',', '')
             budget = ''.join(filter(lambda ch: ch in '0123456789.', budget))
-            logging.info('%s %s' % (replace_text[2], budget))
+            logging.info('%s %s' % ('三、采购项目预算金额（元）：', budget))
 
         if replace_text[3] in span_node.text:
             publish_time = span_node.text.replace(replace_text[3], '')

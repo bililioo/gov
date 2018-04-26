@@ -106,15 +106,15 @@ async def districts_zhongbiao_four():
         await spider.start(item)
 
 # 招标队列 
-tasks = [districts_zhaobiao_four(), districts_zhaobiao_one(), districts_zhaobiao_three(), districts_zhaobiao_two()]
+# tasks = [districts_zhaobiao_four(), districts_zhaobiao_one(), districts_zhaobiao_three(), districts_zhaobiao_two()]
 # 中标队列
-# tasks1 = [districts_zhongbia o_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
+tasks1 = [districts_zhongbiao_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
-loop.run_until_complete(asyncio.wait(tasks))
-# loop.run_until_complete(asyncio.wait(tasks1))
+# loop.run_until_complete(asyncio.wait(tasks))
+loop.run_until_complete(asyncio.wait(tasks1))
 loop.run_until_complete(re_request()) 
 
 loop.close()
