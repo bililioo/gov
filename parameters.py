@@ -67,6 +67,7 @@ all_sitewebId = dict(provinces, **districts, **cities)
 all_district = {v:k for k,v in all_sitewebId.items()}
 
 
+
 def create_all_zhaobiao_params():
     keywords = ['教育', '大学', '中学', '小学', '学院', '学校', '幼儿', '学生']
     
@@ -147,3 +148,24 @@ def create_cities(channelCode):
 
 def create_districts(channelCode):
     return create_params(districts, channelCode.value)
+
+
+
+one_districts = dict(guangzhou, **yunfu, **jieyang, **jiangmen)
+two_districts = dict(zhuhai, **chaozhou, **qingyuan, **yangjiang, **foshan)
+three_districts = dict(shantou, **zhaoqing, **maoming, **zhanjiang, **shaoguan)
+four_districts = dict(dongguan, **shanwei, **huizhou, **meizhou, **heyuan)
+
+def create_districts_one(channelCode):
+    return create_params(one_districts, channelCode.value)
+
+def create_districts_two(channelCode):
+    return create_params(two_districts, channelCode.value)
+
+def create_districts_two(channelCode):
+    return create_params(three_districts, channelCode.value)
+
+def create_districts_three(channelCode):
+    return create_params(four_districts, channelCode.value)
+    
+        

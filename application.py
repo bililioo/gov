@@ -53,72 +53,68 @@ async def delay():
     s = random.randint(1, 5)
     await asyncio.sleep(s)
 
-async def provinces_zhaobbiao():
+
+async def districts_zhaobiao_one():
     await delay()
-    arr = parameters.create_provinces(Channel.zhaobiao)
+    arr = parameters.create_districts_one(Channel.zhaobiao)
     for item in arr:
         await spider.start(item)
 
-async def cities_zhaobiao():
+async def districts_zhaobiao_two():
     await delay()
-    arr = parameters.create_cities(Channel.zhaobiao)
+    arr = parameters.create_districts_two(Channel.zhaobiao)
     for item in arr:
         await spider.start(item)
 
-async def districts_zhaobiao():
+async def districts_zhaobiao_three():
     await delay()
-    arr = parameters.create_cities(Channel.zhaobiao)
+    arr = parameters.create_districts_three(Channel.zhaobiao)
     for item in arr:
         await spider.start(item)
 
-async def provinces_zhongbiao():
+async def districts_zhaobiao_four():
     await delay()
-    arr = parameters.create_provinces(Channel.zhongbiao)
-    for item in arr:
-        await spider.start(item)
-
-async def cities_zhongbiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhongbiao)
-    for item in arr:
-        await spider.start(item)
-
-async def districts_zhongbiao():
-    await delay()
-    arr = parameters.create_cities(Channel.zhongbiao)
+    arr = parameters.create_districts_four(Channel.zhaobiao)
     for item in arr:
         await spider.start(item)
 
 
-async def content():
-    # url = '/showNotice/id/40288ba955a1e86c0155a4055fb80262.html'
-    # url = '/showNotice/id/40288ba9605d0c1a0160689fabe07608.html'
-    # url = '/showNotice/id/40288ba9622f5ea701623bda9fa60b09.html'
-    # url = '/showNotice/id/40288ba962b4fd6d0162bc825e4a5303.html'
-    # url = '/showNotice/id/40288ba95ccd031b015ccdca6482612b.html'
-    # url = '/showNotice/id/40288ba956005483015607482e2371cb.html'
-    # url = '/showNotice/id/40288ba95e1ebb6a015e552ab6545181.html'
-    # url = '/showNotice/id/40288ba961a8fc710161c0888eae19ff.html'
-    # url = '/showNotice/id/40288ba955e4c3810155eca276645552.html'
-    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
-    # url = '/showNotice/id/40288ba952b19ef801530cf1ff944657.html'
-    # url = '/showNotice/id/40288ba95872c0340158769ab920428d.html'
-    # url = '/showNotice/id/40288ba95ad9941b015ada5427781ae2.html'
-    # url = '/showNotice/id/40288ba957aa098f0157adb1ab54433b.html'
-    url = '/showNotice/id/297e55e84ebb3b8e014ed2badade20d8.html'
-    await spider.request_content(url, 'guangzhou', 1)
+
+
+async def districts_zhongbiao_one():
+    await delay()
+    arr = parameters.create_districts_one(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
+
+async def districts_zhongbiao_two():
+    await delay()
+    arr = parameters.create_districts_two(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
+
+async def districts_zhongbiao_three():
+    await delay()
+    arr = parameters.create_districts_three(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
+
+async def districts_zhongbiao_four():
+    await delay()
+    arr = parameters.create_districts_four(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
 
 # 招标队列 
-# tasks = [provinces_zhaobbiao(), cities_zhaobiao(), districts_zhaobiao()]
+tasks = [districts_zhaobiao_four(), districts_zhaobiao_one(), districts_zhaobiao_three(), districts_zhaobiao_two()]
 # 中标队列
-# tasks1 = [provinces_zhongbiao(), cities_zhongbiao(), districts_zhongbiao()]
+# tasks1 = [districts_zhongbia o_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
-# loop.run_until_complete(content())
-# loop.run_until_complete(asyncio.wait(tasks))  
+loop.run_until_complete(asyncio.wait(tasks))
 # loop.run_until_complete(asyncio.wait(tasks1))
-# loop.run_until_complete(re_request()) 
+loop.run_until_complete(re_request()) 
 
 loop.close()
