@@ -105,16 +105,36 @@ async def districts_zhongbiao_four():
     for item in arr:
         await spider.start(item)
 
+async def province_zhangbiao():
+    await delay()
+    arr = parameters.create_provinces(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
+
+async def cities_zhongbiao():
+    await delay()
+    arr = parameters.create_cities(Channel.zhongbiao)
+    for item in arr:
+        await spider.start(item)
+
 # 招标队列 
 # tasks = [districts_zhaobiao_four(), districts_zhaobiao_one(), districts_zhaobiao_three(), districts_zhaobiao_two()]
 # 中标队列
-tasks1 = [districts_zhongbiao_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
+task1 = [districts_zhongbiao_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
+task2 = [cities_zhongbiao()]
+task3 = [province_zhangbiao()]
 
+
+async def content():
+    url = '/showNotice/id/40288ba94f1d14e6014f248576925d3b.html'
+    await spider.request_content(url, 'guangz', 0)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(asyncio.wait(tasks))
-loop.run_until_complete(asyncio.wait(tasks1))
+loop.run_until_complete(asyncio.wait(task1))
+loop.run_until_complete(asyncio.wait(task2))
+loop.run_until_complete(asyncio.wait(task3))
 loop.run_until_complete(re_request()) 
 
 loop.close()

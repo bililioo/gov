@@ -26,15 +26,15 @@ headers = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image
 'Accept-Language':'zh-CN,zh;q=0.9',
 'Cache-Control':'max-age=0',
 'Connection':'keep-alive',
-'Content-Length':'203',
+'Content-Length':'233',
 'Content-Type':'application/x-www-form-urlencoded',
-'Cookie':'ManageSystemCookie=rfOZNOv5LwDB2fnK6MYf7RVMzCGB5eC6zvsUbV34CkxnyscMSqSX!1881410054; clickedFolderroot_region_id_01=21%5E2%5E; highlightedTreeviewLinkroot_region_id_01=2; PortalCookie=H3qbTk0AdyUyYXq5n7aooycKSTQ9ulV9WAP_-Q7yUpt4vrttUjfU!-1215113840',
+'Cookie':'highlightedMoreroot_region_id_01=itemTextLink16; highlightedTreeviewLinkroot_region_id_01=; clickedFolderroot_region_id_01=1%5E2%5E14%5E; PortalCookie=4FX_1rD3eU_c6WanSHg9HEvV9rrN_N-5L3VrINiOIUyf65Bn9G-E!2016076279; highlightedTreeviewLinkroot_region_id_01=2; PortalCookie=H3qbTk0AdyUyYXq5n7aooycKSTQ9ulV9WAP_-Q7yUpt4vrttUjfU!-1215113840',
 'Host':'www.gdgpo.gov.cn',
 'If-Modified-Since':'Fri, 06 Apr 2018 11:41:21 GMT',
 'Origin':'http://www.gdgpo.gov.cn',
-'Referer':'http://www.gdgpo.gov.cn/queryMoreCityCountyInfoList2.do',
+'Referer':'http://www.gdgpo.gov.cn/queryMoreInfoList/channelCode/0005.html',
 'Upgrade-Insecure-Requests':'1',
-'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36'
+'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15'
 }
 
 base_URL = 'http://www.gdgpo.gov.cn'
@@ -106,7 +106,9 @@ def get_page_count(params):
     url = 'http://www.gdgpo.gov.cn/queryMoreCityCountyInfoList2.do'
     b_params = bytes(parse.urlencode(params), 'utf-8')
 
-    html = request.urlopen(url, data=b_params, timeout=10)
+    re = request.Request(url, data=b_params, headers=headers)
+    html = urllib.request.urlopen(re, timeout=10)
+    # html = request.urlopen(url, data=b_params, timeout=10)
     bs_obj = BeautifulSoup(html, 'lxml')   
 
     ul_nodes = bs_obj.body.div.find_all('ul')
@@ -309,7 +311,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
             prices.append(trade_price)
             logging.info('中标、成交金额（元） %s' % trade_price)
     
-    if len(prices) > 0:
+    if len(prices) > 1 and (total_price == 0 or total_price == '') :
         try:
             total_price = reduce(lambda x, y: float(x) + float(y), prices)
         except:
