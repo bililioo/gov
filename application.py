@@ -54,6 +54,14 @@ async def delay():
     await asyncio.sleep(s)
 
 
+async def districts_zhongbiao():
+    await delay()
+    arr = parameters.create_districts(Channel.zhongbiao)
+    total = len(arr)
+    for i, item in enumerate(arr):
+        logging.info('区县：第%d个组合，共%d个组合, %s, 关键字词：%s' % (i, total, item['sitewebId'], item['title']))
+        await spider.start(item)
+
 async def districts_zhaobiao_one():
     await delay()
     arr = parameters.create_districts_one(Channel.zhaobiao)
@@ -105,25 +113,30 @@ async def districts_zhongbiao_four():
     for item in arr:
         await spider.start(item)
 
-async def province_zhangbiao():
+async def province_zhongbiao():
     await delay()
     arr = parameters.create_provinces(Channel.zhongbiao)
-    for item in arr:
+    total = len(arr)
+    for i, item in enumerate(arr):
+        logging.info('广东省：第%d个组合，共%d个组合, %s, 关键字词：%s' % (i, total, item['sitewebId'], item['title']))
         await spider.start(item)
 
 async def cities_zhongbiao():
     await delay()
     arr = parameters.create_cities(Channel.zhongbiao)
-    for item in arr:
+    total = len(arr)
+    for i, item in enumerate(arr):
+        logging.info('城市：第%d个组合，共%d个组合, %s, 关键字词：%s' % (i, total, item['sitewebId'], item['title']))
         await spider.start(item)
 
 # 招标队列 
 # tasks = [districts_zhaobiao_four(), districts_zhaobiao_one(), districts_zhaobiao_three(), districts_zhaobiao_two()]
 # 中标队列
-task1 = [districts_zhongbiao_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
-task2 = [cities_zhongbiao()]
-task3 = [province_zhangbiao()]
+# task1 = [districts_zhongbiao_one(), districts_zhongbiao_two(), districts_zhongbiao_three(), districts_zhongbiao_four()]
+# task2 = [cities_zhongbiao()]
+# task3 = [province_zhongbiao()]
 
+task = [cities_zhongbiao(), province_zhongbiao(), districts_zhongbiao()]
 
 async def content():
     url = '/showNotice/id/40288ba94f1d14e6014f248576925d3b.html'
@@ -131,10 +144,11 @@ async def content():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
+loop.run_until_complete(asyncio.wait(task))
 # loop.run_until_complete(asyncio.wait(tasks))
-loop.run_until_complete(asyncio.wait(task1))
-loop.run_until_complete(asyncio.wait(task2))
-loop.run_until_complete(asyncio.wait(task3))
+# loop.run_until_complete(asyncio.wait(task1))
+# loop.run_until_complete(asyncio.wait(task2))
+# loop.run_until_complete(asyncio.wait(task3))
 loop.run_until_complete(re_request()) 
 
 loop.close()
