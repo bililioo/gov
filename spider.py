@@ -222,7 +222,7 @@ async def content_spider(html, url='', district='', announcement_type=0):
     for span in header_span_nodes:
         if '中标金额：' in span.text and announcement_type == 0:
             total_price = ''.join(filter(lambda ch: ch in '0123456789.', span.text))
-            if total_price == '':
+            if total_price == '' or total_price == '00.00':
                 total_price = 0
             logging.info('中标金额： %s' % total_price)
 

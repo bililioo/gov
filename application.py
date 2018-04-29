@@ -137,27 +137,28 @@ async def cities_zhongbiao():
 # task3 = [province_zhongbiao()]
 
 
-task = [cities_zhongbiao(), province_zhongbiao(), districts_zhongbiao()]
+# task = [cities_zhongbiao(), province_zhongbiao(), districts_zhongbiao()]
 
 async def content():
-    await delay()
-    cycle_type = True
-    while cycle_type:
-        request_models = await models.Failure_ann.findAll()
-        if len(request_models) > 0:
-           for re in request_models:
-                url = re.url
-                url = url.replace('http://www.gdgpo.gov.cn', '')
-                await spider.request_content(url, re.district, re.announcement_type)
-                await models.Failure_ann.remove(re)
-        else:
-             cycle_type = False
-    # await spider.request_content(url, 'guangz', 0)
+    # await delay()
+    # cycle_type = True
+    # while cycle_type:
+    #     request_models = await models.Failure_ann.findAll()
+    #     if len(request_models) > 0:
+    #        for re in request_models:
+    #             url = re.url
+    #             url = url.replace('http://www.gdgpo.gov.cn', '')
+    #             await spider.request_content(url, re.district, re.announcement_type)
+    #             await models.Failure_ann.remove(re)
+    #     else:
+    #          cycle_type = False
+    url = '/showNotice/id/40288ba9504cdde70150509e5f9a2939.html'
+    await spider.request_content(url, 'guangz', 0)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_sql(loop))
 # loop.run_until_complete(asyncio.wait(content))
 loop.run_until_complete(content())
-loop.run_until_complete(re_request()) 
+# loop.run_until_complete(re_request()) 
 
 loop.close()
